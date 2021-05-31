@@ -5,14 +5,8 @@ Tools to emulate a Foundries Factory device
 
 ### Container
 
-download via Treehub
 ```
 docker run -it --rm -e TOKEN=$TOKEN -e FACTORY=$FACTORY -t foundries/ostree-puller pull $OSTREE_HASH
-```
-
-download via OSTree Server
-```
-docker run -it --rm -e OSTREE_PROXY=1 -e TOKEN=$TOKEN -e FACTORY=$FACTORY -t foundries/ostree-puller pull $OSTREE_HASH
 ```
 
 ### Compose

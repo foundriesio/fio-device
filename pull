@@ -4,12 +4,7 @@ export DEVICE_FACTORY=$FACTORY
 DEVICE_NAME=${DEVICE-""}
 lmp-device-register --start-daemon 0 -n "${DEVICE_NAME}" -T $TOKEN
 
-if [[ -z "${OSTREE_PROXY}" ]]; then
-    ostree_server_uri="$(grep -m1 ^ostree_server /var/sota/sota.toml | cut -d\" -f2)"
-else
-    ostree_server_uri="$(grep -m1 ^ostree_server /var/sota/sota.toml | cut -d\" -f2 | sed "s|treehub|ostree|")"
-fi
-
+ostree_server_uri="$(grep -m1 ^ostree_server /var/sota/sota.toml | cut -d\" -f2)"
 ostree remote add fio --no-gpg-verify "${ostree_server_uri}" \
   --set=tls-client-cert-path=/var/sota/client.pem \
   --set=tls-client-key-path=/var/sota/pkey.pem \
@@ -18,4 +13,3 @@ ostree remote add fio --no-gpg-verify "${ostree_server_uri}" \
 hash="${1-OSTREE_HASH}"
 echo "Pulling ${hash} from ${ostree_server_uri}"
 ostree pull fio "${hash}" && echo "OK" || echo "Failed"
-

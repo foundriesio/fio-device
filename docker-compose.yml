@@ -1,18 +1,9 @@
 version: "3"
 
 services:
-  treehub-puller:
-    image: foundries/ostree-puller
-    environment:
-      FACTORY: $FACTORY
-      TOKEN: $TOKEN
-    command: pull $OSTREE_HASH
-
   ostree-puller:
     image: foundries/ostree-puller
     environment:
       FACTORY: $FACTORY
       TOKEN: $TOKEN
-      OSTREE_PROXY: "1"
     command: pull $OSTREE_HASH
-
