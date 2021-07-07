@@ -19,12 +19,13 @@ RUN git init && git remote add origin https://github.com/ostreedev/ostree \
 
 RUN ./autogen.sh CFLAGS='-Wno-error=missing-prototypes' --with-libarchive --disable-man --with-builtin-grub2-mkconfig --with-curl --without-soup --disable-glibtest --prefix=/usr && make install -j4
 
-RUN mkdir /sysroot && ostree admin init-fs /sysroot && ostree admin --sysroot=/sysroot os-init lmp
-
 
 # lmp-device-register deps
 RUN  apt-get install -y \
   g++ libboost-program-options-dev libboost-filesystem-dev
+
+# Debug tools
+RUN apt-get install -y dnsutils uuid-runtime
 
 WORKDIR /dev-reg
 RUN git init && git remote add origin https://github.com/foundriesio/lmp-device-register \

@@ -1,15 +1,28 @@
 #!/bin/bash
 
+export OSTREE_SYSROOT="${2-/sysroot}/$(uuidgen)"
+
+mkdir -p "${OSTREE_SYSROOT}"
+ostree admin init-fs "${OSTREE_SYSROOT}"
+ostree admin --sysroot="${OSTREE_SYSROOT}" os-init lmp
+
+#echo "${OSTREE_SYSROOT}"
+#ls -al "${OSTREE_SYSROOT}"
+#exit 0
+
 export DEVICE_FACTORY=$FACTORY
 DEVICE_NAME=${DEVICE-""}
 lmp-device-register --start-daemon 0 -n "${DEVICE_NAME}" -T $TOKEN
 
 ostree_server_uri="$(grep -m1 ^ostree_server /var/sota/sota.toml | cut -d\" -f2)"
-ostree remote add fio --no-gpg-verify "${ostree_server_uri}" \
+ostree --repo="${OSTREE_SYSROOT}/ostree/repo" remote add fio --no-gpg-verify "${ostree_server_uri}" \
   --set=tls-client-cert-path=/var/sota/client.pem \
   --set=tls-client-key-path=/var/sota/pkey.pem \
   --set=tls-ca-path=/var/sota/root.crt
 
 hash="${1-OSTREE_HASH}"
+echo "34.72.155.201 ostree.foundries.io" > "/etc/hosts"
+echo "34.66.221.89 api.foundries.io" > "/etc/hosts"
+host ostree.foundries.io
 echo "Pulling ${hash} from ${ostree_server_uri}"
-ostree pull fio "${hash}" && echo "OK" || echo "Failed"
+ostree --repo="${OSTREE_SYSROOT}/ostree/repo" pull fio "${hash}" && echo "OK" || echo "Failed"

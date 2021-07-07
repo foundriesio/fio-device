@@ -6,4 +6,28 @@ services:
     environment:
       FACTORY: $FACTORY
       TOKEN: $TOKEN
-    command: pull $OSTREE_HASH
+      OSTREE_REPO_ROOT: $OSTREE_REPO_ROOT
+    volumes:
+     - $OSTREE_REPO_ROOT:/repo-root
+     - $PWD:/work
+    command: /work/pull $OSTREE_HASH /repo-root
+    extra_hosts:
+      - "ostree.foundries.io:34.72.155.201"
+      - "ota-lite.foundries.io:35.226.199.159"
+      - "api.foundries.io:34.66.221.89"
+
+  puller-01:
+    image: fio-puller
+    environment:
+      FACTORY: $FACTORY
+      TOKEN: $TOKEN
+      OSTREE_REPO_ROOT: $OSTREE_REPO_ROOT
+      OSTREE_DEBUG_HTTP: "1"
+    volumes:
+     - $OSTREE_REPO_ROOT:/repo-root
+     - $PWD:/work
+    command: /work/pull $OSTREE_HASH /repo-root
+    extra_hosts:
+      - "ostree.foundries.io:34.72.155.201"
+      - "ota-lite.foundries.io:35.226.199.159"
+      - "api.foundries.io:34.66.221.89"
