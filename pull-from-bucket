@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SYSROOT="${2-/sysroot}"
+REPO_URI=$3
+export OSTREE_SYSROOT="${SYSROOT}/$(uuidgen)"
+export GCS_TOKEN="${GCS_TOKEN}"
+
+mkdir -p "${OSTREE_SYSROOT}"
+ostree admin init-fs "${OSTREE_SYSROOT}"
+ostree admin --sysroot="${OSTREE_SYSROOT}" os-init lmp
+
+ostree_server_uri="${REPO_URI}"
+ostree --repo="${OSTREE_SYSROOT}/ostree/repo" remote add gcs --no-gpg-verify "${ostree_server_uri}" \
+
+hash="${1-OSTREE_HASH}"
+echo "Pulling ${hash} from ${ostree_server_uri}"
+ostree --repo="${OSTREE_SYSROOT}/ostree/repo" pull gcs "${hash}" --http-header="Authorization=Bearer $GCS_TOKEN" && echo "OK" || echo "Failed"

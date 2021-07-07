@@ -1,0 +1,13 @@
+version: "3"
+services:
+  puller:
+    image: foundries/ostree-puller
+    environment:
+      OSTREE_HASH: $OSTREE_HASH
+      OSTREE_REPO_ROOT: /repo
+      GCS_TOKEN: $GCS_TOKEN
+      REPO_URI: $REPO_URI
+    volumes:
+     - $REPO_ROOT:/repo
+     - $PWD:/work
+    command: /work/pull-from-bucket $OSTREE_HASH /repo $REPO_URI

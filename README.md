@@ -5,12 +5,24 @@ Tools to emulate a Foundries Factory device
 
 ### Container
 
+#### Build
+````
+docker build -t foundries/ostree-puller .
+````
+
+#### Run
 ```
-docker run -it --rm -e TOKEN=$TOKEN -e FACTORY=$FACTORY -t foundries/ostree-puller pull $OSTREE_HASH
+export COMPOSE_HTTP_TIMEOUT=3600
+docker run -it --rm -e TOKEN=$TOKEN -e FACTORY=$FACTORY -e OSTREE_HASH=$OSTREE_HASH -v $REPO_ROOT:/repo -v $PWD:/work -w /work -t foundries/ostree-puller /work/pull $OSTREE_HASH /repo
 ```
 
 ### Compose
 
+#### Pull via OSTreeProxy
 ```
-FACTORY=<> TOKEN=<> OSTREE_HASH=<> docker-compose up [--scale <service>=<instance-numb>]
+FACTORY=<> TOKEN=<> OSTREE_HASH=<> REPO_ROOT=<> docker-compose up [--scale ostree-puller=<instance-numb>]
 ```
+
+#### Pull directly from GCS bucket
+export COMPOSE_HTTP_TIMEOUT=3600
+REPO_URI=<> GCS_TOKEN=<> OSTREE_HASH=<> REPO_ROOT=<> docker-compose -f docker-compose-gcs.yml up [--scale puller=<instance-numb>]
