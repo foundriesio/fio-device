@@ -1,0 +1,7 @@
+#!/bin/bash
+
+DEVICE_DIR="${1-$PWD}"
+export DEVICE_FACTORY=$FACTORY
+DEVICE_NAME=${DEVICE-""}
+echo "Certs and sota.toml will be stored in ${DEVICE_DIR}"
+lmp-device-register --start-daemon 0 -n "${DEVICE_NAME}" -T $TOKEN -d "${DEVICE_DIR}"

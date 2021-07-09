@@ -15,3 +15,12 @@ services:
       - "ostree.foundries.io:34.72.155.201"
       - "ota-lite.foundries.io:35.226.199.159"
       - "api.foundries.io:34.66.221.89"
+  device-registrator:
+    image: foundries/ostree-puller
+    user: ${UID_GID}
+    environment:
+      FACTORY: $FACTORY
+      TOKEN: $TOKEN
+    volumes:
+      - $PWD:/work
+    command: /work/register /work

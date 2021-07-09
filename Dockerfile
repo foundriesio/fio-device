@@ -36,3 +36,5 @@ RUN cmake -S . -B build -DHARDWARE_ID=intel-corei7-64 -DDEVICE_FACTORY=${DEF_FAC
 RUN mkdir /var/sota && chmod 700 /var/sota
 
 COPY pull /usr/bin/
+COPY pull-from-bucket /usr/bin/
+COPY register /usr/bin/
