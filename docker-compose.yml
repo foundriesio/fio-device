@@ -36,3 +36,13 @@ services:
     extends:
       service: test-register
     command: bash -c "for ii in {1..$TEST_RUN_NUMB}; do ./register && ./get-app-blob app-05 ff5538e958fc4dbee49cd037f89f68210900551024fd261a2b677201d08750cc && ./delete-device; done"
+
+  load-hub-creds:
+    extends:
+      service: test-register
+    command:  bash -c "./register && ./go-wrk -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
+
+  load-auth-service:
+    extends:
+      service: test-register
+    command:  bash -c "./register && ./go-wrk-token -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"

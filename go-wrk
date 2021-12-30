@@ -1,0 +1,5 @@
+#!/bin/bash
+
+dg_url=$(grep -m1 ^server ${DEVICE_DIR}/sota.toml | cut -d\" -f2)
+
+/go-wrk/go-wrk -ca $DEVICE_DIR/root.crt -cert $DEVICE_DIR/client.pem -key $DEVICE_DIR/pkey.pem -full-url ${dg_url}/hub-creds/ -server-addr $DG_IP_ADDR:8443 $@
