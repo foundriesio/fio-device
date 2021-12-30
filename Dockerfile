@@ -6,11 +6,12 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV OSTREE_SYSROOT=/sysroot
 ENV OSTREE_REPO=/sysroot/ostree/repo
 
-# ostree deps
+# deps
 RUN apt-get update && apt-get -y install --no-install-suggests --no-install-recommends \
   git apt-transport-https ca-certificates autoconf automake make cmake libglib2.0-dev libtool bison \
   libssl-dev libcurl4-openssl-dev \
-  libgpgme11-dev libarchive-dev libcurl4-openssl-dev e2fslibs-dev libfuse-dev libp11-dev liblzma-dev
+  libgpgme11-dev libarchive-dev libcurl4-openssl-dev e2fslibs-dev libfuse-dev libp11-dev liblzma-dev \
+  golang
 
 # build and install ostree/libostree
 WORKDIR /ostree
@@ -20,12 +21,18 @@ RUN git init && git remote add origin https://github.com/ostreedev/ostree \
 RUN ./autogen.sh CFLAGS='-Wno-error=missing-prototypes' --with-libarchive --disable-man --with-builtin-grub2-mkconfig --with-curl --without-soup --disable-glibtest --prefix=/usr && make install -j4
 
 
-# lmp-device-register deps
-RUN  apt-get install -y \
-  g++ libboost-program-options-dev libboost-filesystem-dev
+# install go-wrk
+WORKDIR /go-wrk
+RUN git init && git remote add origin https://github.com/foundriesio/go-wrk.git \
+  && git fetch origin master && git checkout master \
+  && go build
 
 # Debug tools
 RUN apt-get install -y dnsutils uuid-runtime curl httpie jq
+
+# lmp-device-register deps
+RUN  apt-get install -y \
+  g++ libboost-program-options-dev libboost-filesystem-dev
 
 WORKDIR /dev-reg
 RUN git init && git remote add origin https://github.com/foundriesio/lmp-device-register \
