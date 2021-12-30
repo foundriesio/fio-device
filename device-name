@@ -1,0 +1,5 @@
+#!/bin/bash
+
+device_id=$(openssl x509 -noout -subject -in client.pem -nameopt RFC2253  |  sed -e 's/.*CN=//')
+
+curl -s -H "OSF-TOKEN:$TOKEN" "https://api.foundries.io/ota/devices/?factory=${FACTORY}&uuid=${device_id}" | jq .devices | jq -r .[0].name

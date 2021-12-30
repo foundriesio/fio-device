@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep -m1 ^server ${DEVICE_DIR}/sota.toml | cut -d\" -f2

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+dg_url=$(grep -m1 ^server ${DEVICE_DIR}/sota.toml | cut -d\" -f2)
+auth_cred_endpoint="${dg_url}/hub-creds/"
+dg_host=$(echo "${dg_url}" | sed -e 's/https:\/\///')
+
+curl --cacert "${DEVICE_DIR}/root.crt" --cert "${DEVICE_DIR}/client.pem" --key "${DEVICE_DIR}/pkey.pem" "${auth_cred_endpoint}" --resolve "${dg_host}":"${DG_IP_ADDR}"

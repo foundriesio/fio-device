@@ -1,7 +1,14 @@
 #!/bin/bash
 
-DEVICE_DIR="${1-$PWD}"
+echo "API host IP address (gethostent): $(getent ahosts api.foundries.io | awk '{ print $1 }' | head -n 1)"
+echo "API host IP address (gethostbyaddr): $(getent hosts api.foundries.io | awk '{ print $1 }')"
+DEVICE_DIR="${DEVICE_DIR-$PWD}"
 export DEVICE_FACTORY=$FACTORY
-DEVICE_NAME=${DEVICE-""}
-echo "Certs and sota.toml will be stored in ${DEVICE_DIR}"
+
+if [ -z "${DEVICE_NAME}" ] && [ -n "${DEVICE_NAME_PREFIX}" ]; then 
+	DEVICE_NAME="${DEVICE_NAME_PREFIX}-$(uuidgen)"
+fi
+
+DEVICE_NAME="${DEVICE_NAME:-""}"
+echo "Certs and sota.toml will be stored in ${HOST_DEVICE_DIR}"
 lmp-device-register --start-daemon 0 -n "${DEVICE_NAME}" -T $TOKEN -d "${DEVICE_DIR}"

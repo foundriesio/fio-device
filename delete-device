@@ -1,0 +1,15 @@
+#!/bin/bash
+
+device_id=$(openssl x509 -noout -subject -in "${DEVICE_DIR}"/client.pem -nameopt RFC2253  |  sed -e 's/.*CN=//')
+device_name=$(curl -s -H "OSF-TOKEN:$TOKEN" "https://api.foundries.io/ota/devices/?factory=${FACTORY}&uuid=${device_id}" | jq .devices | jq -r .[0].name)
+
+status_code=$(curl -o /tmp/curl-fail-err --write-out %{http_code} -s -X DELETE -H "OSF-TOKEN:$TOKEN" "https://api.foundries.io/ota/devices/$device_name/?factory=${FACTORY}")
+
+if [[ $status_code -eq 200 ]] ; then
+	echo "Device $device_name has been successfully deleted"
+	exit 0
+else
+	echo "Failed to delete $device_name" 
+	cat /tmp/curl-fail-err
+	exit 1
+fi

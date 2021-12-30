@@ -1,26 +1,38 @@
-version: "3"
+version: "3.8"
 
 services:
-  ostree-puller:
-    image: foundries/ostree-puller
+  device:
+    image: foundries/device
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    user: "${UID_GID-1000:1000}"
+    working_dir: /cmddir
     environment:
       FACTORY: $FACTORY
       TOKEN: $TOKEN
-      OSTREE_REPO_ROOT: /repo
+      DEVICE_NAME: $DEVICE_NAME
+      DEVICE_NAME_PREFIX: $DEVICE_NAME_PREFIX
+      HOST_DEVICE_DIR: $DEVICE_DIR
+      DEVICE_DIR: /device-dir
+      DG_IP_ADDR: $DG_IP_ADDR
     volumes:
-     - $REPO_ROOT:/repo
-     - $PWD:/work
-    command: /work/pull $OSTREE_HASH $OSTREE_REPO_ROOT
+      - ${CMD_DIR}:/cmddir
+      - ${DEVICE_DIR}:/device-dir
     extra_hosts:
-      - "ostree.foundries.io:34.72.155.201"
-      - "ota-lite.foundries.io:35.226.199.159"
-      - "api.foundries.io:34.66.221.89"
-  device-registrator:
-    image: foundries/ostree-puller
-    user: ${UID_GID}
-    environment:
-      FACTORY: $FACTORY
-      TOKEN: $TOKEN
-    volumes:
-      - $PWD:/work
-    command: /work/register /work
+      - ostree.foundries.io:34.72.155.201
+      - ota-lite.foundries.io:${DG_IP_ADDR-35.226.199.159}
+      - api.foundries.io:${API_IP_ADDR-34.66.221.89}
+
+  test-register:
+    extends:
+      service: device
+    environment: 
+      DEVICE_DIR: /tmp
+      TEST_RUN_NUMB: "1"
+    command: bash -c "for ii in {1..$TEST_RUN_NUMB}; do ./register && ./delete-device; done"
+
+  test-registry-pull:
+    extends:
+      service: test-register
+    command: bash -c "for ii in {1..$TEST_RUN_NUMB}; do ./register && ./get-app-blob app-05 ff5538e958fc4dbee49cd037f89f68210900551024fd261a2b677201d08750cc && ./delete-device; done"

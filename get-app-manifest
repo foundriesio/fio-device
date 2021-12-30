@@ -1,0 +1,20 @@
+#!/bin/bash
+
+app=$1
+hash=$2
+
+dg_url=$(grep -m1 ^server ${DEVICE_DIR}/sota.toml | cut -d\" -f2)
+auth_cred_endpoint="${dg_url}/hub-creds/"
+dg_host=$(echo "${dg_url}" | sed -e 's/https:\/\///')
+
+echo ">>> ${dg_url}"
+auth_creds=$(curl -s --cacert "${DEVICE_DIR}/root.crt" --cert "${DEVICE_DIR}/client.pem" --key "${DEVICE_DIR}/pkey.pem" "${auth_cred_endpoint}" --resolve "${dg_host}":"${DG_IP_ADDR}")
+
+username=$(echo $auth_creds | jq -r ."Username")
+password=$(echo $auth_creds | jq -r ."Secret")
+basic_creds="$username:$password"
+encoded_basic_creds=$(echo -n "$basic_creds" | base64 -w0)
+
+jwt_token=$(curl -s -H "Authorization: Basic ${encoded_basic_creds}" "https://hub.foundries.io/token-auth/?service=registry&scope=repository:${FACTORY}/${app}:pull" | jq -r .token)
+
+curl -s -H "Authorization: Bearer ${jwt_token}" -H "Accept:application/vnd.oci.image.manifest.v1+json" "https://hub.foundries.io/v2/${FACTORY}/${app}/manifests/sha256:${hash}"
