@@ -14,6 +14,7 @@ services:
       DEVICE_NAME: $DEVICE_NAME
       DEVICE_NAME_PREFIX: $DEVICE_NAME_PREFIX
       HOST_DEVICE_DIR: $DEVICE_DIR
+      DEFAULT_APP: $DEFAULT_APP
       DEVICE_DIR: /device-dir
       DG_IP_ADDR: $DG_IP_ADDR
     volumes:
@@ -40,9 +41,9 @@ services:
   load-hub-creds:
     extends:
       service: test-register
-    command:  bash -c "./register && ./go-wrk -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
+    command:  bash -c "./register && ./go-wrk-basic-auth -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
 
   load-auth-service:
     extends:
       service: test-register
-    command:  bash -c "./register && ./go-wrk-token -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
+    command:  bash -c "./register && ./go-wrk-token -T 20000 -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
