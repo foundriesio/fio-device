@@ -16,6 +16,7 @@ services:
       HOST_DEVICE_DIR: $DEVICE_DIR
       DEFAULT_APP: $DEFAULT_APP
       DEFAULT_HASH: $DEFAULT_HASH
+      DEFAULT_BLOB_HASH: $DEFAULT_BLOB_HASH
       DEVICE_DIR: /device-dir
       DG_IP_ADDR: $DG_IP_ADDR
     volumes:
@@ -53,3 +54,8 @@ services:
     extends:
       service: test-register
     command: bash -c "./register && ./go-wrk-app-man -T 20000 -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
+
+  load-registry-redirect:
+    extends:
+      service: test-register
+    command: bash -c "./register && ./go-wrk-app-blob -redir -T 20000 -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
