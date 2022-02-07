@@ -26,6 +26,7 @@ services:
       - ostree.foundries.io:34.72.155.201
       - ota-lite.foundries.io:${DG_IP_ADDR-35.226.199.159}
       - api.foundries.io:${API_IP_ADDR-34.66.221.89}
+      - hub.foundries.io:${HUB_IP_ADDR-34.121.65.1}
 
   test-register:
     extends:
@@ -58,4 +59,4 @@ services:
   load-registry-redirect:
     extends:
       service: test-register
-    command: bash -c "./register && ./go-wrk-app-blob -redir -T 20000 -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
+    command: bash -c "./register && ./go-wrk-app-blob -redir -T 40000 -c ${GO_WRK_CONCURRENCY} -repeat-numb ${GO_WRK_REQUEST_NUMB} && ./delete-device"
